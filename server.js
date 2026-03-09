@@ -1,11 +1,44 @@
 const express = require('express');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
+const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Create uploads directory if it doesn't exist
+const uploadsDir = path.join(__dirname, 'public', 'images');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// Configure multer for image uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadsDir);
+  },
+  filename: (req, file, cb) => {
+    const timestamp = Date.now();
+    cb(null, 'profile-' + timestamp + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max
+  fileFilter: (req, file, cb) => {
+    const allowed = /jpeg|jpg|png|gif/;
+    const ext = path.extname(file.originalname).toLowerCase();
+    const mime = allowed.test(file.mimetype);
+    if (mime) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'));
+    }
+  }
+});
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
@@ -97,6 +130,24 @@ app.post('/update', (req, res) => {
   } catch (error) {
     console.error('Error updating data:', error);
     res.status(500).render('admin', { data, error: 'Error updating data' });
+  }
+});
+
+// Upload profile photo
+app.post('/upload-photo', upload.single('profile_photo'), (req, res) => {
+  if (!req.cookies || req.cookies.admin_auth !== 'true') return res.redirect('/login');
+  try {
+    if (req.file) {
+      const photoPath = '/images/' + req.file.filename;
+      data.profilePhoto = photoPath;
+      fs.writeFileSync(path.join(__dirname, 'data.json'), JSON.stringify(data, null, 2));
+      res.redirect('/admin');
+    } else {
+      res.status(400).redirect('/admin');
+    }
+  } catch (error) {
+    console.error('Error uploading photo:', error);
+    res.status(500).render('admin', { data, error: 'Error uploading photo' });
   }
 });
 
