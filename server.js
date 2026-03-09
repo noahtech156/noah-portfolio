@@ -51,26 +51,61 @@ try {
     about: ['Welcome to my portfolio!'],
     experiences: [],
     projects: [],
-    footer: 'Portfolio Website'
+    footer: 'Portfolio Website',
+    profilePhoto: null
   };
 }
 
+// Ensure all required properties exist
+const ensureData = (data) => {
+  return {
+    name: data.name || 'Portfolio',
+    title: data.title || 'Developer',
+    description: data.description || 'Welcome to my portfolio',
+    about: Array.isArray(data.about) ? data.about : [],
+    experiences: Array.isArray(data.experiences) ? data.experiences : [],
+    projects: Array.isArray(data.projects) ? data.projects : [],
+    footer: data.footer || '© 2024 Portfolio',
+    profilePhoto: data.profilePhoto || null
+  };
+};
+
+// Ensure data has all required properties on startup
+data = ensureData(data);
+
 // Routes
 app.get('/', (req, res) => {
-  res.render('index', data);
+  try {
+    const pageData = ensureData(data);
+    res.render('index', pageData);
+  } catch (error) {
+    console.error('Error rendering index:', error);
+    res.status(500).send('Error loading portfolio. Please try again later.');
+  }
 });
 
 app.get('/admin', (req, res) => {
   console.log('Admin access, cookie:', req.cookies ? req.cookies.admin_auth : 'no cookies');
-  if (req.cookies && req.cookies.admin_auth === 'true') {
-    res.render('admin', { data });
-  } else {
-    res.redirect('/login');
+  try {
+    if (req.cookies && req.cookies.admin_auth === 'true') {
+      const pageData = ensureData(data);
+      res.render('admin', { data: pageData });
+    } else {
+      res.redirect('/login');
+    }
+  } catch (error) {
+    console.error('Error loading admin:', error);
+    res.status(500).send('Error loading admin panel');
   }
 });
 
 app.get('/login', (req, res) => {
-  res.render('login');
+  try {
+    res.render('login');
+  } catch (error) {
+    console.error('Error loading login:', error);
+    res.status(500).send('Error loading login page');
+  }
 });
 
 app.post('/login', (req, res) => {
@@ -143,8 +178,35 @@ app.post('/upload-photo', (req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Something went wrong!');
+  console.error('Server error:', err.message, err.stack);
+  const statusCode = err.status || 500;
+  res.status(statusCode).send(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Error</title>
+      <style>
+        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: linear-gradient(135deg, #0a192f 0%, #1a2a4a 100%); color: #fff; }
+        .error-container { text-align: center; background: rgba(255,255,255,0.05); padding: 40px; border-radius: 8px; max-width: 600px; }
+        h1 { font-size: 3em; margin: 0 0 10px 0; color: #F7C948; }
+        p { font-size: 1.2em; margin: 10px 0; }
+        .error-detail { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 4px; margin-top: 20px; font-family: monospace; font-size: 0.9em; text-align: left; }
+        a { color: #F7C948; text-decoration: none; margin-top: 20px; display: inline-block; }
+        a:hover { text-decoration: underline; }
+      </style>
+    </head>
+    <body>
+      <div class="error-container">
+        <h1>${statusCode}</h1>
+        <p>An error occurred while processing your request.</p>
+        ${process.env.NODE_ENV === 'development' ? `<div class="error-detail"><strong>Error:</strong> ${err.message}</div>` : ''}
+        <a href="/">← Return to Home</a>
+      </div>
+    </body>
+    </html>
+  `);
 });
 
 app.listen(PORT, () => {
