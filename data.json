@@ -1,0 +1,48 @@
+{
+  "name": "Noah Aizeboje",
+  "title": "Web Developer & DevOps Engineer",
+  "description": "Computer Science Graduate from Ambrose Alli University. Building secure, automated systems with a focus on Cloud & Cybersecurity.",
+  "about": [],
+  "experiences": [
+    {
+      "period": "2024 — Present",
+      "position": "Database Manager · Ecommerce Enterprises",
+      "description": "Optimized localhost database performance and managed data integrity for high-volume commerce platforms. Implemented database migrations, query optimizations, and ensured data security compliance."
+    },
+    {
+      "period": "2024 — Present",
+      "position": "Portal Manager & Fullstack Dev",
+      "description": "Developed secure portals, monitored for bugs, and implemented DevOps pipelines for automated deployments. Built responsive web applications using modern frameworks and integrated APIs for seamless user experiences."
+    },
+    {
+      "period": "2023 — 2024",
+      "position": "Freelance Web Developer",
+      "description": "Designed and developed custom websites for small businesses, focusing on user-centric design and performance optimization. Collaborated with clients to understand requirements and deliver high-quality solutions."
+    },
+    {
+      "period": "2022 — 2023",
+      "position": "Intern · Tech Startup",
+      "description": "Assisted in backend development, learned version control with Git, and contributed to team projects. Gained hands-on experience in agile development methodologies and code reviews."
+    }
+  ],
+  "projects": [
+    {
+      "title": "FUNDmePIPS",
+      "description": "A crowdfunding platform for innovative projects, built with Node.js and MongoDB. Features user authentication, payment integration, and real-time updates."
+    },
+    {
+      "title": "DevOps Automation Tool",
+      "description": "Custom tool for automating deployment pipelines using Docker and Jenkins. Reduces deployment time by 50% and ensures consistent environments."
+    },
+    {
+      "title": "Secure Chat Application",
+      "description": "End-to-end encrypted chat app developed with React and Socket.io. Implements cybersecurity best practices for data protection."
+    },
+    {
+      "title": "Portfolio Website",
+      "description": "This very portfolio website, showcasing my skills in web development and DevOps. Built with Express.js, EJS, and Tailwind CSS."
+    }
+  ],
+  "footer": "Built with HTML, Tailwind CSS, and Express.js. © 2024 Noah Aizeboje.",
+  "_locals": {}
+}
