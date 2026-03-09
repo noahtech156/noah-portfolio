@@ -1,6 +1,6 @@
 const express = require('express');
 const session = require('express-session');
-const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const fs = require('fs');
 const path = require('path');
 
@@ -8,13 +8,12 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'portfolio-secret-key-2024',
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(cookieParser());
   resave: false,
   saveUninitialized: false,
-  cookie: { 
+  cookie: {
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000
@@ -41,7 +40,8 @@ app.get('/', (req, res) => {
 });
 
 app.get('/admin', (req, res) => {
-  if (req.session.loggedIn) {
+  console.log('Admin access, cookie:', req.cookies ? req.cookies.admin_auth : 'no cookies');
+  if (req.cookies && req.cookies.admin_auth === 'true') {
     res.render('admin', { data });
   } else {
     res.redirect('/login');
@@ -53,17 +53,25 @@ app.get('/login', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
+  console.log('Login attempt:', req.body);
   const { username, password } = req.body;
-  if (username === 'admin' && password === 'password') { // Change this
-    req.session.loggedIn = true;
+  if (username === 'admin' && password === 'password') {
+    console.log('Login successful');
+    // Set a simple cookie for auth
+    res.cookie('admin_auth', 'true', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 24 * 60 * 60 * 1000
+    });
     res.redirect('/admin');
   } else {
+    console.log('Login failed');
     res.render('login', { error: 'Invalid credentials' });
   }
 });
 
 app.post('/update', (req, res) => {
-  if (!req.session.loggedIn) return res.redirect('/login');
+  if (!req.cookies || req.cookies.admin_auth !== 'true') return res.redirect('/login');
   try {
     const newData = { ...req.body };
     newData.about = [];
