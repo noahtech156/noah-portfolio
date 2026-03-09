@@ -1,23 +1,23 @@
 {
   "version": 2,
-  "public": false,
-  "env": {
-    "NODE_ENV": "production"
-  },
   "builds": [
     {
       "src": "server.js",
-      "use": "@vercel/node@2.x",
-      "config": {
-        "maxLambdaSize": "50mb",
-        "nodeVersion": "18.x"
-      }
+      "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "server.js"
+      "dest": "server.js",
+      "methods": [
+        "GET",
+        "POST",
+        "PUT",
+        "PATCH",
+        "DELETE",
+        "OPTIONS"
+      ]
     }
   ]
 }</content>
