@@ -1,44 +1,17 @@
 const express = require('express');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
-const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Create uploads directory if it doesn't exist
-const uploadsDir = path.join(__dirname, 'public', 'images');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
+// Check if environment is serverless (Vercel, etc.)
+const isServerless = process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME;
 
-// Configure multer for image uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadsDir);
-  },
-  filename: (req, file, cb) => {
-    const timestamp = Date.now();
-    cb(null, 'profile-' + timestamp + path.extname(file.originalname));
-  }
-});
-
-const upload = multer({
-  storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max
-  fileFilter: (req, file, cb) => {
-    const allowed = /jpeg|jpg|png|gif/;
-    const ext = path.extname(file.originalname).toLowerCase();
-    const mime = allowed.test(file.mimetype);
-    if (mime) {
-      cb(null, true);
-    } else {
-      cb(new Error('Only image files are allowed'));
-    }
-  }
-});
+// Note: Image uploads are disabled in serverless environments due to read-only filesystem
+// For production, use a cloud storage service like AWS S3, Cloudinary, or Supabase
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
@@ -63,10 +36,23 @@ app.set('views', path.join(__dirname, 'views'));
 // Load data with error handling
 let data;
 try {
-  data = JSON.parse(fs.readFileSync(path.join(__dirname, 'data.json'), 'utf8'));
+  const dataPath = path.join(__dirname, 'data.json');
+  if (fs.existsSync(dataPath)) {
+    data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+  } else {
+    throw new Error('data.json not found');
+  }
 } catch (error) {
   console.error('Error loading data.json:', error);
-  data = { name: '', title: '', description: '', about: [], experiences: [], projects: [], footer: '' };
+  data = { 
+    name: 'Noah Aizeboje',
+    title: 'Web Developer & DevOps Engineer',
+    description: 'Portfolio powered by Express.js',
+    about: ['Welcome to my portfolio!'],
+    experiences: [],
+    projects: [],
+    footer: 'Portfolio Website'
+  };
 }
 
 // Routes
@@ -125,30 +111,35 @@ app.post('/update', (req, res) => {
       }
     }
     Object.assign(data, newData);
-    fs.writeFileSync(path.join(__dirname, 'data.json'), JSON.stringify(data, null, 2));
-    res.redirect('/admin');
+    
+    // Try to save to file (will fail silently in serverless)
+    try {
+      if (!isServerless) {
+        fs.writeFileSync(path.join(__dirname, 'data.json'), JSON.stringify(data, null, 2));
+      }
+      res.redirect('/admin');
+    } catch (writeError) {
+      console.warn('Could not save to file (serverless environment):', writeError.message);
+      res.redirect('/admin');
+    }
   } catch (error) {
     console.error('Error updating data:', error);
     res.status(500).render('admin', { data, error: 'Error updating data' });
   }
 });
 
-// Upload profile photo
-app.post('/upload-photo', upload.single('profile_photo'), (req, res) => {
+// Photo upload endpoint (disabled in serverless)
+app.post('/upload-photo', (req, res) => {
   if (!req.cookies || req.cookies.admin_auth !== 'true') return res.redirect('/login');
-  try {
-    if (req.file) {
-      const photoPath = '/images/' + req.file.filename;
-      data.profilePhoto = photoPath;
-      fs.writeFileSync(path.join(__dirname, 'data.json'), JSON.stringify(data, null, 2));
-      res.redirect('/admin');
-    } else {
-      res.status(400).redirect('/admin');
-    }
-  } catch (error) {
-    console.error('Error uploading photo:', error);
-    res.status(500).render('admin', { data, error: 'Error uploading photo' });
+  
+  if (isServerless) {
+    return res.status(503).render('admin', { 
+      data, 
+      error: 'File uploads are disabled in serverless environment. Use Cloudinary or similar service.' 
+    });
   }
+  
+  res.status(503).render('admin', { data, error: 'Photo upload feature not available' });
 });
 
 app.use((err, req, res, next) => {
