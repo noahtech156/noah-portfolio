@@ -11,18 +11,29 @@ const PORT = process.env.PORT || 3000;
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(session({
-  secret: 'your-secret-key', // Change this to a secure key
+  secret: process.env.SESSION_SECRET || 'portfolio-secret-key-2024',
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: false,
+  cookie: { 
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000
+  }
 }));
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Set view engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Load data
-let data = JSON.parse(fs.readFileSync('data.json', 'utf8'));
+// Load data with error handling
+let data;
+try {
+  data = JSON.parse(fs.readFileSync(path.join(__dirname, 'data.json'), 'utf8'));
+} catch (error) {
+  console.error('Error loading data.json:', error);
+  data = { name: '', title: '', description: '', about: [], experiences: [], projects: [], footer: '' };
+}
 
 // Routes
 app.get('/', (req, res) => {
@@ -53,21 +64,35 @@ app.post('/login', (req, res) => {
 
 app.post('/update', (req, res) => {
   if (!req.session.loggedIn) return res.redirect('/login');
-  // Update data
-  const newData = { ...req.body };
-  newData.about = [];
-  for (let key in req.body) {
-    if (key.startsWith('about[')) {
-      const index = parseInt(key.match(/about\[(\d+)\]/)[1]);
-      newData.about[index] = req.body[key];
+  try {
+    const newData = { ...req.body };
+    newData.about = [];
+    for (let key in req.body) {
+      if (key.startsWith('about[')) {
+        const match = key.match(/about\[(\d+)\]/);
+        if (match) {
+          const index = parseInt(match[1]);
+          newData.about[index] = req.body[key];
+        }
+      }
     }
+    for (let key in newData) {
+      if (key.startsWith('about[')) {
+        delete newData[key];
+      }
+    }
+    Object.assign(data, newData);
+    fs.writeFileSync(path.join(__dirname, 'data.json'), JSON.stringify(data, null, 2));
+    res.redirect('/admin');
+  } catch (error) {
+    console.error('Error updating data:', error);
+    res.status(500).render('admin', { data, error: 'Error updating data' });
   }
-  delete newData['about[0]'];
-  delete newData['about[1]'];
-  // For other arrays, but for now
-  Object.assign(data, newData);
-  fs.writeFileSync('data.json', JSON.stringify(data, null, 2));
-  res.redirect('/admin');
+});
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something went wrong!');
 });
 
 app.listen(PORT, () => {
