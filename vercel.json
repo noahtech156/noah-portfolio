@@ -1,16 +1,19 @@
 {
   "version": 2,
-  "buildCommand": "npm install",
-  "installCommand": "npm install",
+  "public": false,
   "env": {
     "NODE_ENV": "production"
   },
-  "functions": {
-    "server.js": {
-      "memory": 1024,
-      "maxDuration": 60
+  "builds": [
+    {
+      "src": "server.js",
+      "use": "@vercel/node@2.x",
+      "config": {
+        "maxLambdaSize": "50mb",
+        "nodeVersion": "18.x"
+      }
     }
-  },
+  ],
   "routes": [
     {
       "src": "/(.*)",
