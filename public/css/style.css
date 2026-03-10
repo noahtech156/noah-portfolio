@@ -80,23 +80,30 @@ html {
     }
 
     /* Ensure mobile content fits screen */
-    .lg\\:flex {
-        flex-direction: column;
-        width: 100%;
-    }
-
-    .lg\\:w-1\\/2 {
-        width: 100%;
-    }
-
-    .lg\\:sticky {
-        position: static;
+    .min-h-screen {
+        min-height: 100vh;
+        width: 100vw;
+        max-width: 100vw;
+        overflow-x: hidden;
     }
 }
 
 /* Mobile menu animation */
 #mobile-menu {
     transition: all 0.3s ease-in-out;
+}
+
+/* Hover effects only on devices that support hover */
+@media (hover: hover) {
+    .group:hover .list {
+        opacity: 0.5;
+    }
+    .group:hover {
+        opacity: 1 !important;
+    }
+    .group:hover .bg-hover {
+        background-color: rgba(30, 41, 59, 0.5);
+    }
 }
 
 #mobile-menu.hidden {
@@ -187,6 +194,3 @@ body {
 }
 
 /* Remove static background effects - only dynamic glow remains */
-#glow {
-    /* Dynamic glow effect handled by JavaScript */
-}

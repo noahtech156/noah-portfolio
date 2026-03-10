@@ -10,3 +10,15 @@ const mobileMenu = document.getElementById('mobile-menu');
 menuToggle.addEventListener('click', () => {
     mobileMenu.classList.toggle('hidden');
 });
+
+// Intersection Observer for scroll animations
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('opacity-100', 'translate-y-0');
+            entry.target.classList.remove('opacity-0', 'translate-y-8');
+        }
+    });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.opacity-0.translate-y-8').forEach(el => observer.observe(el));

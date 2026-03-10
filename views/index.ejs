@@ -25,7 +25,7 @@
 </head>
 <body class="bg-navy leading-relaxed text-slate-400 antialiased selection:bg-gold/30 selection:text-gold">
 
-    <div id="glow" class="pointer-events-none fixed inset-0 z-30 transition duration-300"></div>
+    <div id="glow" class="pointer-events-none fixed inset-0 z-30 transition duration-300 hidden lg:block"></div>
 
     <!-- Desktop Top Navbar -->
     <nav class="hidden lg:block fixed top-0 left-0 right-0 z-50 bg-navy/90 backdrop-blur-sm border-b border-slate-200/10">
@@ -63,11 +63,11 @@
     </nav>
 
     <div class="mx-auto min-h-screen px-4 py-8 font-sans sm:px-6 sm:py-12 md:px-12 md:py-20 lg:px-24 lg:py-0 lg:pt-20 w-full max-w-full overflow-hidden">
-        <div class="lg:flex lg:justify-between lg:gap-4 lg:max-w-screen-xl lg:mx-auto">
+        <div class="flex flex-col lg:flex-row lg:justify-between lg:gap-4 lg:max-w-screen-xl lg:mx-auto">
             
             <header class="lg:sticky lg:top-0 lg:flex lg:max-h-screen lg:w-1/2 lg:flex-col lg:justify-between lg:py-24">
                 <div>
-                    <h1 class="text-2xl font-bold tracking-tight text-slate-200 sm:text-3xl md:text-4xl lg:text-5xl">
+                    <h1 class="text-3xl font-bold tracking-tight text-slate-200 lg:text-5xl">
                         <a href="#"><%= name %></a>
                     </h1>
                     <h2 class="mt-2 text-base font-medium tracking-tight text-gold sm:text-lg md:text-xl">
@@ -126,19 +126,19 @@
 
             <main class="pt-8 lg:pt-24 lg:w-1/2 lg:py-24">
                 
-                <section id="about" class="mb-12 scroll-mt-24 sm:mb-16 md:mb-24 lg:mb-36">
+                <section id="about" class="mb-12 scroll-mt-24 sm:mb-16 md:mb-24 lg:mb-36 opacity-0 translate-y-8 transition-all duration-700 ease-out">
                     <h3 class="text-sm font-bold uppercase tracking-widest text-slate-200 lg:hidden mb-4">About</h3>
                     <% about.forEach(paragraph => { %>
                         <p class="mb-4 text-sm sm:text-base leading-relaxed text-slate-300"><%= paragraph %></p>
                     <% }) %>
                 </section>
 
-                <section id="experience" class="mb-12 scroll-mt-24 sm:mb-16">
+                <section id="experience" class="mb-12 scroll-mt-24 sm:mb-16 opacity-0 translate-y-8 transition-all duration-700 ease-out">
                     <h3 class="text-sm font-bold uppercase tracking-widest text-slate-200 mb-8">Experience</h3>
                     
                     <% experiences.forEach(exp => { %>
-                    <div class="group relative mb-8 sm:mb-12 grid grid-cols-1 gap-2 sm:gap-4 transition-all sm:grid-cols-8 lg:hover:!opacity-100 lg:group-hover/list:opacity-50">
-                        <div class="absolute -inset-x-2 sm:-inset-x-4 -inset-y-3 sm:-inset-y-4 z-0 hidden rounded-md transition lg:-inset-x-6 lg:block lg:group-hover:bg-slate-800/50"></div>
+                    <div class="group relative mb-8 sm:mb-12 grid grid-cols-1 gap-2 sm:gap-4 transition-all sm:grid-cols-8 list opacity-0 translate-y-8">
+                        <div class="absolute -inset-x-2 sm:-inset-x-4 -inset-y-3 sm:-inset-y-4 z-0 hidden rounded-md transition lg:-inset-x-6 lg:block bg-hover"></div>
                         <header class="z-10 text-xs font-semibold uppercase tracking-wide text-gold sm:col-span-2"><%= exp.period %></header>
                         <div class="z-10 sm:col-span-6">
                             <h3 class="font-medium leading-snug text-slate-200 text-sm sm:text-base"><%= exp.position %></h3>
@@ -148,11 +148,11 @@
                     <% }) %>
                 </section>
 
-                <section id="projects" class="mb-12 scroll-mt-24 sm:mb-16">
+                <section id="projects" class="mb-12 scroll-mt-24 sm:mb-16 opacity-0 translate-y-8 transition-all duration-700 ease-out">
                     <h3 class="text-sm font-bold uppercase tracking-widest text-slate-200 mb-8">Selected Projects</h3>
                     <% projects.forEach(project => { %>
-                    <div class="group relative mb-8 sm:mb-12 grid grid-cols-1 gap-2 sm:gap-4 transition-all sm:grid-cols-8 lg:hover:!opacity-100 lg:group-hover/list:opacity-50">
-                        <div class="absolute -inset-x-2 sm:-inset-x-4 -inset-y-3 sm:-inset-y-4 z-0 hidden rounded-md transition lg:-inset-x-6 lg:block lg:group-hover:bg-slate-800/50"></div>
+                    <div class="group relative mb-8 sm:mb-12 grid grid-cols-1 gap-2 sm:gap-4 transition-all sm:grid-cols-8 list opacity-0 translate-y-8">
+                        <div class="absolute -inset-x-2 sm:-inset-x-4 -inset-y-3 sm:-inset-y-4 z-0 hidden rounded-md transition lg:-inset-x-6 lg:block bg-hover"></div>
                         <header class="z-10 text-xs font-semibold uppercase tracking-wide text-gold sm:col-span-2"><%= project.title %></header>
                         <div class="z-10 sm:col-span-6">
                             <p class="mt-2 text-xs sm:text-sm leading-relaxed text-slate-300"><%= project.description %></p>
@@ -161,7 +161,7 @@
                     <% }) %>
                 </section>
 
-                <section id="contact" class="mb-12 scroll-mt-24 sm:mb-16">
+                <section id="contact" class="mb-12 scroll-mt-24 sm:mb-16 opacity-0 translate-y-8 transition-all duration-700 ease-out">
                     <h3 class="text-sm font-bold uppercase tracking-widest text-slate-200 mb-8">Contact</h3>
                     <p class="mb-4 text-sm sm:text-base leading-relaxed text-slate-300">I'm always open to discussing new opportunities, collaborations, or just having a chat about technology. Feel free to reach out!</p>
                     <div class="flex flex-col gap-4">
