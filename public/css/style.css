@@ -3,3 +3,144 @@
 ::-webkit-scrollbar-track { background: #0a192f; }
 ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: #334155; }
+
+/* Mobile optimization */
+@media (max-width: 640px) {
+    html {
+        font-size: 14px;
+    }
+
+    body {
+        overflow-x: hidden;
+    }
+}
+
+/* Smooth anchor scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Better touch targets on mobile */
+@media (max-width: 640px) {
+    a {
+        padding: 8px 4px;
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    button {
+        min-height: 44px;
+        min-width: 44px;
+    }
+}
+
+/* Improved spacing for mobile */
+@media (max-width: 768px) {
+    * {
+        -webkit-tap-highlight-color: transparent;
+    }
+}
+
+/* Gold color accent */
+.text-gold {
+    color: #F7C948;
+}
+
+/* Responsive profile photo */
+@media (max-width: 640px) {
+    .profile-photo {
+        margin-top: 1.5rem;
+    }
+}
+
+/* Better mobile navigation */
+@media (max-width: 1024px) {
+    nav {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+}
+
+/* Mobile menu animation */
+#mobile-menu {
+    transition: all 0.3s ease-in-out;
+}
+
+#mobile-menu.hidden {
+    display: none;
+}
+
+#mobile-menu.block {
+    display: block;
+    animation: slideDown 0.3s ease-in-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive text sizing */
+@media (max-width: 640px) {
+    h1 { line-height: 1.2; }
+    h2 { line-height: 1.3; }
+    h3 { line-height: 1.3; }
+}
+
+/* Better text contrast on mobile */
+p {
+    letter-spacing: 0.3px;
+}
+
+/* Hover effects optimization */
+@media (hover: hover) and (pointer: fine) {
+    a:hover {
+        text-decoration: underline;
+    }
+}
+
+/* Mobile-first flexbox */
+.flex {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+/* Image optimization */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Background accent enhancements */
+body {
+    background: linear-gradient(135deg, #0a192f 0%, #0f172a 50%, #1e293b 100%);
+    background-attachment: fixed;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+        radial-gradient(circle at 20% 80%, rgba(247, 201, 72, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(247, 201, 72, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Enhanced glow effect */
+#glow {
+    background:
+        radial-gradient(circle at 30% 40%, rgba(247, 201, 72, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 70% 60%, rgba(56, 189, 248, 0.05) 0%, transparent 50%);
+}
